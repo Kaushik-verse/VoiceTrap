@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.cache/
+results/*/cache/
+pretrained_models/
+.DS_Store
+data/librispeech/
+data/corpus/
+data/tts/

@@ -1,0 +1,9 @@
+{
+ "threshold": 0.45,
+ "owner_windows": 13,
+ "other_windows": 85,
+ "owner_accept": 1.0,
+ "other_accept": 0.0,
+ "owner_mean": 0.754,
+ "other_mean": 0.064
+}

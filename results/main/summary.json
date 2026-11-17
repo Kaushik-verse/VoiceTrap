@@ -1,0 +1,82 @@
+{
+ "none": {
+  "hijack_attack": 0.28125,
+  "hijack_clone": 0.75,
+  "hijack_background": null,
+  "utility_clean": 1.0,
+  "utility_under_attack": 0.925,
+  "attack_heard": 0.375,
+  "reached_owner": 0.0,
+  "n": 46,
+  "by_level": {
+   "-20": 0.125,
+   "-10": 0.25,
+   "-5": 0.375,
+   "0": 0.375
+  }
+ },
+ "prompt": {
+  "hijack_attack": 0.375,
+  "hijack_clone": 1.0,
+  "hijack_background": null,
+  "utility_clean": 1.0,
+  "utility_under_attack": 1.0,
+  "attack_heard": 0.375,
+  "reached_owner": 0.0,
+  "n": 46,
+  "by_level": {
+   "-20": 0.125,
+   "-10": 0.375,
+   "-5": 0.5,
+   "0": 0.5
+  }
+ },
+ "promptguard": {
+  "hijack_attack": 0.28125,
+  "hijack_clone": 0.75,
+  "hijack_background": null,
+  "utility_clean": 1.0,
+  "utility_under_attack": 0.925,
+  "attack_heard": 0.375,
+  "reached_owner": 0.0,
+  "n": 46,
+  "by_level": {
+   "-20": 0.125,
+   "-10": 0.25,
+   "-5": 0.375,
+   "0": 0.375
+  }
+ },
+ "speaker": {
+  "hijack_attack": 0.09375,
+  "hijack_clone": 0.75,
+  "hijack_background": null,
+  "utility_clean": 1.0,
+  "utility_under_attack": 1.0,
+  "attack_heard": 0.09375,
+  "reached_owner": 0.0,
+  "n": 46,
+  "by_level": {
+   "-20": 0.0,
+   "-10": 0.125,
+   "-5": 0.125,
+   "0": 0.125
+  }
+ },
+ "shield": {
+  "hijack_attack": 0.0,
+  "hijack_clone": 0.0,
+  "hijack_background": null,
+  "utility_clean": 1.0,
+  "utility_under_attack": 0.95,
+  "attack_heard": 0.09375,
+  "reached_owner": 0.225,
+  "n": 46,
+  "by_level": {
+   "-20": 0.0,
+   "-10": 0.0,
+   "-5": 0.0,
+   "0": 0.0
+  }
+ }
+}
