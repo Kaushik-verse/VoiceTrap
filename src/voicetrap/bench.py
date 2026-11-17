@@ -70,14 +70,15 @@ def make_gate(data: Path, out: Path, log=print):
 
 
 def run_bench(out: Path, data: Path = Path("data"), defences=None, kinds=None, groq=None, gate=None,
-              log=print) -> list[dict]:
+              log=print, gate_for=None) -> list[dict]:
+    """``gate_for(clip, defence) -> gate`` overrides ``gate`` (used by the multi-owner benchmark)."""
     from voicetrap.groq import Groq
 
     out.mkdir(parents=True, exist_ok=True)
     defences = defences or DEFENCES
     clips = [c for c in load_manifest(data) if not kinds or c.kind in kinds]
     groq = groq or Groq(cache_dir=out / "cache")
-    if gate is None and any(d in ("speaker", "shield") for d in defences):
+    if gate is None and gate_for is None and any(d in ("speaker", "shield") for d in defences):
         gate = make_gate(data, out, log)
     res_file = out / "results.jsonl"
     done = set()
@@ -92,7 +93,8 @@ def run_bench(out: Path, data: Path = Path("data"), defences=None, kinds=None, g
             if (c.id, d) in done:
                 continue
             t0 = time.perf_counter()
-            o = run(x, d, groq, gate=gate, approve=partial(owner_approves, c))
+            g = gate_for(c, d) if gate_for else gate
+            o = run(x, d, groq, gate=g, approve=partial(owner_approves, c))
             s = score(c, o)
             row = {"clip": c.id, "defence": d, **{k: v for k, v in asdict(c).items() if k != "id"},
                    **s, "transcript": o.transcript, "tool_calls": o.tool_calls,
