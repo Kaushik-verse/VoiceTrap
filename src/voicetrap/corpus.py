@@ -17,6 +17,7 @@ import json
 import random
 import re
 import subprocess
+import zlib
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -130,18 +131,17 @@ def build_real(libri: Path, per_speaker: int = 12, max_s: float = 8.0, seed: int
     return speakers
 
 
-def split(speakers: list[Speaker], val: float = 0.15, test: float = 0.3, seed: int = 7) -> None:
-    """Assign splits by group, stratified by source, so test speakers are unseen in training."""
-    rng = random.Random(seed)
-    for source in ("tts", "real"):
-        groups = sorted({s.group for s in speakers if s.source == source})
-        rng.shuffle(groups)
-        n_test, n_val = round(len(groups) * test), round(len(groups) * val)
-        which = {g: "test" for g in groups[:n_test]}
-        which |= {g: "val" for g in groups[n_test : n_test + n_val]}
-        for s in speakers:
-            if s.source == source:
-                s.split = which.get(s.group, "train")
+def split_of(group: str, val: float = 0.15, test: float = 0.3, salt: str = "voicetrap") -> str:
+    """Stable split from a hash of the speaker group: the same voice always lands in the same split,
+    whichever other voices exist, so adding or losing voices never moves anyone across splits."""
+    u = zlib.crc32(f"{salt}:{group}".encode()) / 2**32
+    return "test" if u < test else "val" if u < test + val else "train"
+
+
+def split(speakers: list[Speaker], val: float = 0.15, test: float = 0.3) -> None:
+    """Assign splits by speaker group so test speakers are never heard in training."""
+    for s in speakers:
+        s.split = split_of(s.group, val, test)
 
 
 def build(root: Path = Path("data/corpus"), libri: Path = Path("data/librispeech")) -> list[Speaker]:

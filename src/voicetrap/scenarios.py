@@ -128,7 +128,7 @@ def render(clip: Clip, speak) -> "A.np.ndarray":
             at = 0.7 if clip.timing == "overlap" else 0.4 + len(user) / A.SR + 0.5
             mix = A.overlay(mix, ad, at)
     mix = A.overlay(mix, A.silence(0.5), len(mix) / A.SR)
-    noise = A.room_noise(len(mix) / A.SR, seed)
+    noise = A.room_noise(len(mix) / A.SR + 0.01, seed)[: len(mix)]
     mix = mix + noise[: len(mix)] * (A.active_rms(mix) / A.rms(noise) * 10 ** (-30 / 20))
     return A.normalize(mix)
 
