@@ -1,9 +1,9 @@
 | Defence | Hijacked (hidden command) | Hijacked (cloned voice) | Hijacked (TV only, owner silent) | Owner's request done (clean) | Owner's request done (under attack) | Hidden command transcribed |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
-| No defence | **28%** | 75% | n/a | 100% | 92% | 38% |
-| Prompt rule | **38%** | 100% | n/a | 100% | 100% | 38% |
-| Prompt Guard 2 | **28%** | 75% | n/a | 100% | 92% | 38% |
-| Speaker gate | **9%** | 75% | n/a | 100% | 100% | 9% |
-| VoiceTrap Shield | **0%** | 0% | n/a | 100% | 95% | 9% |
+| No defence | **23%** | 83% | 100% | 100% | 95% | 29% |
+| Prompt rule | **29%** | 100% | 100% | 100% | 100% | 29% |
+| Prompt Guard 2 | **23%** | 83% | 100% | 100% | 95% | 29% |
+| Speaker gate | **6%** | 83% | 22% | 100% | 97% | 6% |
+| VoiceTrap Shield | **0%** | 17% | 11% | 100% | 93% | 6% |
 
 Speaker gate threshold 0.45: owner windows accepted 100%, unseen voices accepted 0%.

@@ -18,32 +18,32 @@
 <text x="690.0" y="376" font-size="13" fill="#5E6368" text-anchor="middle">-5 dB</text>
 <text x="980.0" y="376" font-size="13" fill="#5E6368" text-anchor="middle">+0 dB</text>
 <text x="545.0" y="400" font-size="12" fill="#8A8F94" text-anchor="middle">quieter than the owner  →  as loud as the owner</text>
-<path d="M110.0 317.5 L400.0 285.0 L690.0 252.5 L980.0 252.5" fill="none" stroke="#B4552D" stroke-width="2.2"/>
-<circle cx="110.0" cy="317.5" r="4" fill="#B4552D"/>
-<circle cx="400.0" cy="285.0" r="4" fill="#B4552D"/>
-<circle cx="690.0" cy="252.5" r="4" fill="#B4552D"/>
-<circle cx="980.0" cy="252.5" r="4" fill="#B4552D"/>
+<path d="M110.0 328.3 L400.0 306.7 L690.0 263.3 L980.0 263.3" fill="none" stroke="#B4552D" stroke-width="2.2"/>
+<circle cx="110.0" cy="328.3" r="4" fill="#B4552D"/>
+<circle cx="400.0" cy="306.7" r="4" fill="#B4552D"/>
+<circle cx="690.0" cy="263.3" r="4" fill="#B4552D"/>
+<circle cx="980.0" cy="263.3" r="4" fill="#B4552D"/>
 <rect x="1020" y="98" width="22" height="6" rx="3" fill="#B4552D"/>
 <text x="1052" y="106" font-size="14" fill="#1A1C1E">No defence</text>
-<path d="M110.0 317.5 L400.0 252.5 L690.0 220.0 L980.0 220.0" fill="none" stroke="#D99A6C" stroke-width="2.2"/>
-<circle cx="110.0" cy="317.5" r="4" fill="#D99A6C"/>
-<circle cx="400.0" cy="252.5" r="4" fill="#D99A6C"/>
-<circle cx="690.0" cy="220.0" r="4" fill="#D99A6C"/>
-<circle cx="980.0" cy="220.0" r="4" fill="#D99A6C"/>
+<path d="M110.0 328.3 L400.0 285.0 L690.0 241.7 L980.0 241.7" fill="none" stroke="#D99A6C" stroke-width="2.2"/>
+<circle cx="110.0" cy="328.3" r="4" fill="#D99A6C"/>
+<circle cx="400.0" cy="285.0" r="4" fill="#D99A6C"/>
+<circle cx="690.0" cy="241.7" r="4" fill="#D99A6C"/>
+<circle cx="980.0" cy="241.7" r="4" fill="#D99A6C"/>
 <rect x="1020" y="128" width="22" height="6" rx="3" fill="#D99A6C"/>
 <text x="1052" y="136" font-size="14" fill="#1A1C1E">Prompt rule</text>
-<path d="M110.0 317.5 L400.0 285.0 L690.0 252.5 L980.0 252.5" fill="none" stroke="#C9B79C" stroke-width="2.2"/>
-<circle cx="110.0" cy="317.5" r="4" fill="#C9B79C"/>
-<circle cx="400.0" cy="285.0" r="4" fill="#C9B79C"/>
-<circle cx="690.0" cy="252.5" r="4" fill="#C9B79C"/>
-<circle cx="980.0" cy="252.5" r="4" fill="#C9B79C"/>
+<path d="M110.0 328.3 L400.0 306.7 L690.0 263.3 L980.0 263.3" fill="none" stroke="#C9B79C" stroke-width="2.2"/>
+<circle cx="110.0" cy="328.3" r="4" fill="#C9B79C"/>
+<circle cx="400.0" cy="306.7" r="4" fill="#C9B79C"/>
+<circle cx="690.0" cy="263.3" r="4" fill="#C9B79C"/>
+<circle cx="980.0" cy="263.3" r="4" fill="#C9B79C"/>
 <rect x="1020" y="158" width="22" height="6" rx="3" fill="#C9B79C"/>
 <text x="1052" y="166" font-size="14" fill="#1A1C1E">Prompt Guard 2</text>
-<path d="M110.0 350.0 L400.0 317.5 L690.0 317.5 L980.0 317.5" fill="none" stroke="#7FA1C9" stroke-width="2.2"/>
+<path d="M110.0 350.0 L400.0 328.3 L690.0 328.3 L980.0 328.3" fill="none" stroke="#7FA1C9" stroke-width="2.2"/>
 <circle cx="110.0" cy="350.0" r="4" fill="#7FA1C9"/>
-<circle cx="400.0" cy="317.5" r="4" fill="#7FA1C9"/>
-<circle cx="690.0" cy="317.5" r="4" fill="#7FA1C9"/>
-<circle cx="980.0" cy="317.5" r="4" fill="#7FA1C9"/>
+<circle cx="400.0" cy="328.3" r="4" fill="#7FA1C9"/>
+<circle cx="690.0" cy="328.3" r="4" fill="#7FA1C9"/>
+<circle cx="980.0" cy="328.3" r="4" fill="#7FA1C9"/>
 <rect x="1020" y="188" width="22" height="6" rx="3" fill="#7FA1C9"/>
 <text x="1052" y="196" font-size="14" fill="#1A1C1E">Speaker gate</text>
 <path d="M110.0 350.0 L400.0 350.0 L690.0 350.0 L980.0 350.0" fill="none" stroke="#1E4D8C" stroke-width="3.5"/>

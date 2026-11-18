@@ -1,0 +1,119 @@
+speaker groups per split: {'train': {'tts': 37, 'real': 32}, 'val': {'tts': 11, 'real': 7}, 'test': {'tts': 14, 'real': 15}}
+{'train': '4256 trials', 'val': '1760 trials', 'test': '2016 trials'}
+  logreg C=0.01  val EER 0.0398
+  logreg C=0.1   val EER 0.0464
+  logreg C=1.0   val EER 0.0611
+  mlp h=32       val EER 0.0398
+  mlp h=128      val EER 0.0384
+cosine val EER 0.0881; selected mlp h=128
+{
+ "selected": "mlp h=128",
+ "val_eer": {
+  "logreg C=0.01": 0.0398,
+  "logreg C=0.1": 0.0464,
+  "logreg C=1.0": 0.0611,
+  "mlp h=32": 0.0398,
+  "mlp h=128": 0.0384,
+  "cosine": 0.0881
+ }
+}
+{
+ "cosine": {
+  "eer": 0.0432,
+  "auc": 0.9886,
+  "far_at_frr5": 0.0387,
+  "threshold_frr5": 0.2158,
+  "n": 2016,
+  "by": {
+   "impostor:ad": {
+    "far_at_t": 0.0432
+   },
+   "owner:clean": {
+    "frr_at_t": 0.0,
+    "eer": 0.0141
+   },
+   "impostor:clean": {
+    "far_at_t": 0.0548
+   },
+   "owner:music": {
+    "frr_at_t": 0.007,
+    "eer": 0.0179
+   },
+   "owner:noise": {
+    "frr_at_t": 0.0156,
+    "eer": 0.0283
+   },
+   "impostor:noise": {
+    "far_at_t": 0.0215
+   },
+   "owner:phone": {
+    "frr_at_t": 0.1522,
+    "eer": 0.0725
+   },
+   "impostor:phone": {
+    "far_at_t": 0.0354
+   },
+   "owner:quiet_other": {
+    "frr_at_t": 0.0709,
+    "eer": 0.0638
+   },
+   "owners:tts": {
+    "eer": 0.0532,
+    "n": 1296
+   },
+   "owners:real": {
+    "eer": 0.0208,
+    "n": 720
+   }
+  }
+ },
+ "trained": {
+  "eer": 0.0543,
+  "auc": 0.9867,
+  "far_at_frr5": 0.061,
+  "threshold_frr5": 0.2074,
+  "n": 2016,
+  "by": {
+   "impostor:ad": {
+    "far_at_t": 0.0676
+   },
+   "owner:clean": {
+    "frr_at_t": 0.0,
+    "eer": 0.0081
+   },
+   "impostor:clean": {
+    "far_at_t": 0.0452
+   },
+   "owner:music": {
+    "frr_at_t": 0.007,
+    "eer": 0.0282
+   },
+   "owner:noise": {
+    "frr_at_t": 0.0469,
+    "eer": 0.0469
+   },
+   "impostor:noise": {
+    "far_at_t": 0.0523
+   },
+   "owner:phone": {
+    "frr_at_t": 0.1087,
+    "eer": 0.0751
+   },
+   "impostor:phone": {
+    "far_at_t": 0.0767
+   },
+   "owner:quiet_other": {
+    "frr_at_t": 0.0851,
+    "eer": 0.0851
+   },
+   "owners:tts": {
+    "eer": 0.0602,
+    "n": 1296
+   },
+   "owners:real": {
+    "eer": 0.0458,
+    "n": 720
+   }
+  }
+ }
+}
