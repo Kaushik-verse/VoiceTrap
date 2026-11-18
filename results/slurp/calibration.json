@@ -1,0 +1,27 @@
+{
+ "model": "ecapa_pretrained",
+ "threshold": 0.2189,
+ "owner_accept": 0.949,
+ "other_accept": 0.066,
+ "owner_windows": 158,
+ "other_windows": 2370,
+ "speakers": 16,
+ "candidates": {
+  "ecapa_pretrained": {
+   "threshold": 0.2189,
+   "owner_accept": 0.949,
+   "other_accept": 0.066,
+   "owner_windows": 158,
+   "other_windows": 2370,
+   "speakers": 16
+  },
+  "ecapa_finetuned": {
+   "threshold": 0.1671,
+   "owner_accept": 0.949,
+   "other_accept": 0.126,
+   "owner_windows": 158,
+   "other_windows": 2370,
+   "speakers": 16
+  }
+ }
+}

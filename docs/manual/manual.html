@@ -317,7 +317,7 @@
       <p><b>2 · Three owners, unseen attackers.</b> Indian, Irish and British English owners. Twelve attacker voices
         that no part of the system was tuned on. 108 clips, 540 runs.</p>
       <p><b>3 · Real owners.</b> Twelve real people from the SLURP dataset, recorded on far-field home microphones.
-        Attackers and clones made with F5-TTS. 276 clips, about 1,100 runs. Running now.</p>
+        Attackers and clones made with F5-TTS. 272 clips, 1,088 runs.</p>
     </div>
     <div>
       <h3>How a run is judged</h3>
@@ -489,8 +489,9 @@
       <p class="small">On audiobook speech like its training data, fine-tuning cut mistakes by about a quarter. On
         VCTK's different accents and microphones it did slightly worse. It learned LibriSpeech, not voices in
         general. That's a useful negative result: the pretrained ECAPA is already strong, and WavLM is far behind it.</p>
-      <p class="small">The real-owner benchmark therefore doesn't assume either. It picks between them on separate
-        SLURP speakers, never on owners or attackers.</p>
+      <p class="small">The real-owner benchmark therefore didn't assume either. On 16 separate SLURP speakers, with 5%
+        of owner speech muted, the pretrained model let in 6.6% of other voices and the fine-tuned one 12.6%. The
+        pretrained model was used.</p>
     </div>
   </div>
   <div class="foot"><span><b>VoiceTrap</b> · training the gate</span><span>10</span></div>
@@ -525,11 +526,17 @@
   <div class="note">The gate here is calibrated on 16 more SLURP speakers who are neither owners nor attackers. The
     same 16 decide between the pretrained and fine-tuned voiceprint models, so no choice is made by looking at test
     results.</div>
-  <div class="note rust"><b>Status:</b> the attack audio is being generated in Colab, and the benchmark (276 clips ×
-    4 defences) runs on Groq's free tier over one to two days. Results will appear in the app's Results page and in
-    the README when it finishes. They aren't in this edition.</div>
-  <p class="muted small">SLURP audio is CC BY-NC 4.0 and F5-TTS weights are CC BY-NC 4.0, so neither the recordings
-    nor the clones are put in the repository. See section 12.</p>
+  <table style="margin-bottom:4mm">
+    <tr><th>272 clips × 4 defences</th><th class="c">Hidden command</th><th class="c">Cloned voice</th><th class="c">TV only</th><th class="c">Owner's request done</th></tr>
+    <tr><td>No defence</td><td class="c">59%</td><td class="c">79%</td><td class="c">92%</td><td class="c">71%</td></tr>
+    <tr><td>Prompt Guard 2</td><td class="c">59%</td><td class="c">79%</td><td class="c">92%</td><td class="c">71%</td></tr>
+    <tr><td>Speaker gate</td><td class="c">9%</td><td class="c">69%</td><td class="c">11%</td><td class="c">62%</td></tr>
+    <tr><td><b>VoiceTrap Shield</b></td><td class="c"><b>5%</b></td><td class="c"><b>21%</b></td><td class="c"><b>6%</b></td><td class="c">62%</td></tr>
+  </table>
+  <div class="note rust">Real voices are harder on everyone: with no defence, 59% of hidden commands worked, against
+    33% with synthetic owners. The gate still cut that to 9% and the Shield to 5%, and every Shield hijack was
+    again "read my messages". The cost is real too. On quiet, far-away recordings the gate mutes some of the owner's
+    own words, so plain requests went through 62% of the time instead of 71%.</div>
   <div class="foot"><span><b>VoiceTrap</b> · real owners</span><span>11</span></div>
 </section>
 

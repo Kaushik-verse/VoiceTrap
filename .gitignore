@@ -23,3 +23,4 @@ data/v2/enroll/
 data/v2/tts/
 results/gate/embeddings/
 results/gate/*.joblib
+results/slurp.log

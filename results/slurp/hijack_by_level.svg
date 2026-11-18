@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420" width="1280" height="420" role="img" aria-label="Hijack rate by attacker loudness for each defence">
+<rect width="1280" height="420" rx="22" fill="#F7F6F2"/>
+<g font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">
+<text x="48" y="50" font-family="Georgia,serif" font-size="24" fill="#1A1C1E">How often the hidden command took over</text>
+<text x="48" y="74" font-size="14" fill="#5E6368">Hijack rate by how loud the hidden command is, relative to the owner's voice</text>
+<line x1="110" y1="350.0" x2="980" y2="350.0" stroke="#E6E3DB"/>
+<text x="98" y="354.0" font-size="12" fill="#8A8F94" text-anchor="end">0%</text>
+<line x1="110" y1="285.0" x2="980" y2="285.0" stroke="#E6E3DB"/>
+<text x="98" y="289.0" font-size="12" fill="#8A8F94" text-anchor="end">25%</text>
+<line x1="110" y1="220.0" x2="980" y2="220.0" stroke="#E6E3DB"/>
+<text x="98" y="224.0" font-size="12" fill="#8A8F94" text-anchor="end">50%</text>
+<line x1="110" y1="155.0" x2="980" y2="155.0" stroke="#E6E3DB"/>
+<text x="98" y="159.0" font-size="12" fill="#8A8F94" text-anchor="end">75%</text>
+<line x1="110" y1="90.0" x2="980" y2="90.0" stroke="#E6E3DB"/>
+<text x="98" y="94.0" font-size="12" fill="#8A8F94" text-anchor="end">100%</text>
+<text x="110.0" y="376" font-size="13" fill="#5E6368" text-anchor="middle">-20 dB</text>
+<text x="400.0" y="376" font-size="13" fill="#5E6368" text-anchor="middle">-10 dB</text>
+<text x="690.0" y="376" font-size="13" fill="#5E6368" text-anchor="middle">-5 dB</text>
+<text x="980.0" y="376" font-size="13" fill="#5E6368" text-anchor="middle">+0 dB</text>
+<text x="545.0" y="400" font-size="12" fill="#8A8F94" text-anchor="middle">quieter than the owner  →  as loud as the owner</text>
+<path d="M400.0 208.9 L980.0 186.6" fill="none" stroke="#B4552D" stroke-width="2.2"/>
+<circle cx="400.0" cy="208.9" r="4" fill="#B4552D"/>
+<circle cx="980.0" cy="186.6" r="4" fill="#B4552D"/>
+<rect x="1020" y="98" width="22" height="6" rx="3" fill="#B4552D"/>
+<text x="1052" y="106" font-size="14" fill="#1A1C1E">No defence</text>
+<path d="M400.0 208.9 L980.0 186.6" fill="none" stroke="#C9B79C" stroke-width="2.2"/>
+<circle cx="400.0" cy="208.9" r="4" fill="#C9B79C"/>
+<circle cx="980.0" cy="186.6" r="4" fill="#C9B79C"/>
+<rect x="1020" y="128" width="22" height="6" rx="3" fill="#C9B79C"/>
+<text x="1052" y="136" font-size="14" fill="#1A1C1E">Prompt Guard 2</text>
+<path d="M400.0 331.4 L980.0 324.0" fill="none" stroke="#9DB3CF" stroke-width="2.2"/>
+<circle cx="400.0" cy="331.4" r="4" fill="#9DB3CF"/>
+<circle cx="980.0" cy="324.0" r="4" fill="#9DB3CF"/>
+<rect x="1020" y="158" width="22" height="6" rx="3" fill="#9DB3CF"/>
+<text x="1052" y="166" font-size="14" fill="#1A1C1E">Speaker gate</text>
+<path d="M400.0 335.1 L980.0 338.9" fill="none" stroke="#1E4D8C" stroke-width="3.5"/>
+<circle cx="400.0" cy="335.1" r="4" fill="#1E4D8C"/>
+<circle cx="980.0" cy="338.9" r="4" fill="#1E4D8C"/>
+<rect x="1020" y="188" width="22" height="6" rx="3" fill="#1E4D8C"/>
+<text x="1052" y="196" font-size="14" fill="#1A1C1E">VoiceTrap Shield</text>
+</g></svg>

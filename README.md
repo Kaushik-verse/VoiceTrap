@@ -54,6 +54,21 @@ VoiceTrap measures how often that happens, and tests what actually stops it.
 | Speaker gate (trained) | 10% | 89% | 11% | 94% |
 | **VoiceTrap Shield** | **6%** | **22%** | **0%** | 94% |
 
+**Twelve real owners from [SLURP](https://github.com/pswietojanski/slurp)** (real people recorded at home on
+far-away microphones), attacked by voices made with F5-TTS: 272 clips × 4 defences = 1,088 runs.
+
+| Defence | Hidden command | Cloned voice | TV only | Owner's request done (clean) | Owner's request done (under attack) |
+|---|:-:|:-:|:-:|:-:|:-:|
+| No defence | 59% | 79% | 92% | 71% | 52% |
+| Prompt Guard 2 | 59% | 79% | 92% | 71% | 52% |
+| Speaker gate (pretrained ECAPA) | 9% | 69% | 11% | 62% | 50% |
+| **VoiceTrap Shield** | **5%** | **21%** | **6%** | 62% | 49% |
+
+Real voices are harder on everyone. With no defence, hidden commands worked 59% of the time instead of 33%. The
+gate still cut that to 9%, and the Shield to 5%, and again every Shield hijack was "read my messages". The price
+is real too: on these quiet, far-field recordings the gate mutes some of the owner's own words, so plain requests
+went through 62% of the time instead of 71%.
+
 <p align="center"><img src="results/main/hijack_by_level.svg" alt="Hijack rate by how loud the hidden command is, for each defence" width="100%"></p>
 
 ### What we learned
@@ -71,8 +86,11 @@ VoiceTrap measures how often that happens, and tests what actually stops it.
    action that doesn't ask for confirmation. In the three-owner test, every one that wasn't a cloned voice
    came from one hard pair: an Irish owner and a South African attacker with similar voices. We report this instead of re-tuning the
    policy on test results.
-5. **Training a fancier gate didn't help much.** See [Training the speaker gate](#training-the-speaker-gate).
-6. **Speech recognition makes its own mistakes.** Whisper hears one owner's *"five hundred rupees"* as
+5. **It holds up on real people.** On twelve real SLURP owners and F5-TTS attackers, the gate cut hidden
+   commands from 59% to 9% and the Shield to 5%. It costs something: the owner's own plain requests went through
+   62% of the time instead of 71%, because the gate also mutes some of a quiet, far-away owner.
+6. **Training a fancier gate didn't help much.** See [Training the speaker gate](#training-the-speaker-gate).
+7. **Speech recognition makes its own mistakes.** Whisper hears one owner's *"five hundred rupees"* as
    *"100 rupees"* every time. That's why the owner's request is done 94% of the time, not 100%, in the
    three-owner test. We left it in.
 
@@ -175,8 +193,9 @@ The gate was then fine-tuned on 251 LibriSpeech speakers and tested on unseen Li
 | WavLM base-plus-sv | LibriSpeech / VCTK | 16.8% / 19.1% | 0.915 / 0.883 | 38% / 53% |
 
 Fine-tuning helped on audiobook speech like its training data, and did slightly worse on VCTK's new accents and
-microphones. The pretrained ECAPA is already strong. The real-owner benchmark picks between the two on separate
-SLURP speakers, never on owners or attackers.
+microphones. The pretrained ECAPA is already strong. The real-owner benchmark picked between the two on 16 separate
+SLURP speakers, never on owners or attackers: at the same 5% of owner speech muted, the pretrained model let in
+6.6% of other voices and the fine-tuned one 12.6%, so the pretrained model was used.
 
 ## Run it
 
@@ -219,8 +238,10 @@ src/voicetrap/
 ## Limits
 
 - The voices in benchmarks 1 and 2 are synthetic and mixed in software, not played through a real speaker in a
-  real room. Benchmark 3 (real SLURP owners, F5-TTS attackers) is running now. Its notebooks are in `colab/`.
-- "Cloned voice" means the same macOS voice as the owner, a best case for the attacker.
+  real room. Benchmark 3 uses real SLURP owners, but the attackers are still synthetic (F5-TTS) and mixed in
+  software.
+- In benchmarks 1 and 2, "cloned voice" means the same macOS voice as the owner, a best case for the attacker. In
+  benchmark 3 it is an F5-TTS clone made from the owner's own SLURP recordings.
 - The owner's approval is simulated.
 - One agent model (gpt-oss-20b) and one speech recognizer (Whisper large-v3-turbo).
 

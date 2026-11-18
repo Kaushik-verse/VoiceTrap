@@ -296,7 +296,8 @@ def p_replay():
             return f"“{r.user_text}”"
         lvl = "" if pd.isna(r.level_db) else f", {int(r.level_db)} dB"
         won = "  ·  worked with no defence" if cid in beaten else ""
-        return f"{PAYLOAD_LABEL.get(r.payload, r.payload)} ({r['style']}{lvl}{', ' + r.timing if r.timing else ''}){won}"
+        timing = f", {r.timing}" if isinstance(r.timing, str) and r.timing else ""  # background clips have none
+        return f"{PAYLOAD_LABEL.get(r.payload, r.payload)} ({r['style']}{lvl}{timing}){won}"
 
     cid = c.selectbox("Clip", list(pool.index), format_func=describe)
     r = pool.loc[cid]
@@ -345,7 +346,7 @@ def p_replay():
                     "for. Struck-through pills were blocked. Red pills are high-risk tools.")
 
 def p_try():
-    st.markdown("## Try your own voice")
+    st.markdown("## Try it with your voice")
     st.markdown('<p class="vt-muted">Your recordings stay on this computer. Only the speech-to-text step goes online '
                 '(to Groq), and only after VoiceTrap has muted the voices it thinks aren\'t yours.</p>', unsafe_allow_html=True)
 
@@ -488,6 +489,14 @@ not 100%, because Whisper hears one owner's “five hundred rupees” as “100 
             st.markdown("Real people from SLURP as owners; attackers and voice clones made with F5-TTS.")
             st.altair_chart(bars(slurp, dS), width="stretch")
             st.dataframe(table(slurp, dS), hide_index=True, width="stretch")
+            st.markdown(f'<div class="vt-note">Real voices are harder on everyone: with no defence, '
+                        f'{pct(slurp["none"]["hijack_attack"])} of hidden commands worked. The speaker gate cut that '
+                        f'to {pct(slurp["speaker"]["hijack_attack"])} and the Shield to '
+                        f'{pct(slurp["shield"]["hijack_attack"])}; every Shield hijack was "read my messages".</div>'
+                        f'<div class="vt-note warn">The gate has a cost on quiet, far-away recordings: it mutes some '
+                        f'of the owner\'s own words, so plain requests went through '
+                        f'{pct(slurp["speaker"]["utility_clean"])} of the time instead of '
+                        f'{pct(slurp["none"]["utility_clean"])}.</div>', unsafe_allow_html=True)
         else:
             st.markdown('<div class="vt-note">This benchmark is still running: 12 real owners from SLURP '
                         '(home recordings, far-field microphones), attacked by voices and clones made with F5-TTS. '
