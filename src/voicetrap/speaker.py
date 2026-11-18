@@ -17,13 +17,17 @@ MODEL_ID = "speechbrain/spkrec-ecapa-voxceleb"
 
 
 class Embedder:
-    def __init__(self, savedir: str = "pretrained_models/ecapa") -> None:
+    def __init__(self, savedir: str = "pretrained_models/ecapa", weights: str | None = None) -> None:
+        """``weights``: a fine-tuned ECAPA state dict (from colab/real_voice_gate.ipynb) to load over the pretrained one."""
         import torch
         from speechbrain.inference.speaker import EncoderClassifier
 
         self.torch = torch
         self.model = EncoderClassifier.from_hparams(source=MODEL_ID, savedir=savedir,
                                                     run_opts={"device": "cpu"})
+        if weights:
+            self.model.mods.embedding_model.load_state_dict(torch.load(weights, map_location="cpu"))
+        self.model.mods.eval()
 
     def __call__(self, batch: list[np.ndarray]) -> np.ndarray:
         n = max(len(x) for x in batch)

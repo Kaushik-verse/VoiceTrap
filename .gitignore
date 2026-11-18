@@ -11,3 +11,6 @@ pretrained_models/
 data/librispeech/
 data/corpus/
 data/tts/
+data/slurp_bench/
+data/gate_ft/
+results/slurp/cache/

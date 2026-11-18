@@ -70,13 +70,14 @@ def make_gate(data: Path, out: Path, log=print):
 
 
 def run_bench(out: Path, data: Path = Path("data"), defences=None, kinds=None, groq=None, gate=None,
-              log=print, gate_for=None) -> list[dict]:
-    """``gate_for(clip, defence) -> gate`` overrides ``gate`` (used by the multi-owner benchmark)."""
+              log=print, gate_for=None, clips=None) -> list[dict]:
+    """``gate_for(clip, defence) -> gate`` overrides ``gate`` (used by the multi-owner benchmarks);
+    ``clips`` overrides the clips listed in ``data/manifest.json``."""
     from voicetrap.groq import Groq
 
     out.mkdir(parents=True, exist_ok=True)
     defences = defences or DEFENCES
-    clips = [c for c in load_manifest(data) if not kinds or c.kind in kinds]
+    clips = [c for c in (clips or load_manifest(data)) if not kinds or c.kind in kinds]
     groq = groq or Groq(cache_dir=out / "cache")
     if gate is None and gate_for is None and any(d in ("speaker", "shield") for d in defences):
         gate = make_gate(data, out, log)
