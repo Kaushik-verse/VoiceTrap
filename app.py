@@ -365,12 +365,34 @@ def p_try():
     test = rec or up
 
     st.markdown("### 3 · See what the assistant hears")
-    defences = st.multiselect("Protections to compare", ["none", "promptguard", "speaker", "shield"],
-                              default=["none", "speaker", "shield"], format_func=DEF_LABEL.get)
+    st.markdown("Pick the protections to compare. Each one gets the same recording, and you see side by side what "
+                "the assistant heard and did.")
+    plain = {"none": "The assistant hears every voice in the room and does whatever it's told. This shows what "
+                     "can go wrong.",
+             "promptguard": "A safety filter from Meta reads the words before the assistant acts. It can't tell "
+                            "who said them.",
+             "speaker": "Mutes any voice that doesn't sound like you, before the assistant hears it.",
+             "shield": "The voice check, plus your approval before any payment, message or door unlock."}
+    pc = st.columns(2, gap="medium")
+    defences = []
+    for i, d in enumerate(plain):
+        with pc[i % 2]:
+            if st.checkbox(DEF_LABEL[d], value=d != "promptguard", key=f"def_{d}"):
+                defences.append(d)
+            st.caption(plain[d])
     with st.expander("Advanced: how strict the voice check is"):
-        thr = st.slider("How close a window must be to your voiceprint to be kept (cosine)", 0.1, 0.7,
-                        GATE_THRESHOLD, 0.01, help="The default was calibrated on 70 training speakers so that only "
-                        "5% of an owner's speech gets muted. Lower lets more through; higher mutes more.")
+        levels = {"Relaxed": 0.20, "Balanced (recommended)": GATE_THRESHOLD, "Strict": 0.38}
+        lvl = st.select_slider("Voice check", list(levels), value="Balanced (recommended)")
+        thr = levels[lvl]
+        st.markdown("""- **Relaxed** keeps more of your words, but a voice that sounds like yours is more likely to
+  slip through.
+- **Balanced** is what the benchmarks used. It cuts about 1 in 20 of your own words and blocks almost every
+  other voice.
+- **Strict** blocks more strangers, but may cut off more of what you say, especially in a noisy room or over a
+  phone line.""")
+        st.caption(f"For developers: this sets the cosine-similarity threshold between each 1.2-second window and "
+                   f"the enrolled voiceprint (now {thr:.3f}). Balanced is calibrated so that 5% of an owner's "
+                   f"windows are muted on the training speakers.")
     go = st.button("Run", type="primary", disabled=not (test and defences))
     if go:
         if any(d in ("speaker", "shield") for d in defences) and len(have) < 2:
