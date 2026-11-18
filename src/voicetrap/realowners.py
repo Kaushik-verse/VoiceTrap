@@ -3,7 +3,7 @@
 Inputs come from ``colab/slurp_attacks.ipynb`` (unzipped to ``data/slurp_bench``; SLURP audio is CC BY-NC 4.0, so it is
 git-ignored and never redistributed). The speaker gate is calibrated on SLURP speakers that are neither owners nor
 attackers, and uses the fine-tuned ECAPA from ``colab/real_voice_gate.ipynb`` only if that model beat the pretrained
-one on its validation speakers.
+one on its validation speakers and lets fewer other voices through on the SLURP calibration speakers.
 """
 
 from __future__ import annotations
@@ -154,15 +154,22 @@ class Gates:
     def __init__(self, m: dict, root: Path = ROOT, out: Path = OUT) -> None:
         from voicetrap.speaker import Embedder
 
-        self.weights = gate_weights()
-        self.embed = Embedder(weights=self.weights)
-        model = "ecapa_finetuned" if self.weights else "ecapa_pretrained"
+        # The fine-tuned model beat the pretrained one on LibriSpeech but not on VCTK, so the choice between them is
+        # made on the SLURP calibration speakers (same domain as the benchmark, never owners or attackers): whichever
+        # lets fewer other voices through at 5% owner rejects.
+        ft = gate_weights()
+        options = {"ecapa_pretrained": None, **({"ecapa_finetuned": ft} if ft else {})}
         cal_path = out / "calibration.json"
         cal = json.loads(cal_path.read_text()) if cal_path.exists() else {}
-        if cal.get("model") != model:
-            cal = {"model": model, **calibrate(self.embed, m, root)}
+        if sorted(cal.get("candidates", {})) != sorted(options):
+            cands = {name: calibrate(Embedder(weights=w), m, root) for name, w in options.items()}
+            best = min(cands, key=lambda k: (cands[k]["other_accept"], k != "ecapa_pretrained"))
+            cal = {"model": best, **cands[best], "candidates": cands}
             out.mkdir(parents=True, exist_ok=True)
             cal_path.write_text(json.dumps(cal, indent=1))
+        model = cal["model"]
+        self.weights = options[model]
+        self.embed = Embedder(weights=self.weights)
         print(f"speaker gate: {model}, threshold {cal['threshold']} (calibration speakers: owner windows kept "
               f"{cal['owner_accept']}, other voices kept {cal['other_accept']})")
         self.threshold, self.root, self.cache = cal["threshold"], root, {}
