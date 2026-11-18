@@ -21,8 +21,8 @@
 
 # %%
 import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 SMOKE = os.environ.get("SMOKE") == "1"  # tiny local test run on CPU
