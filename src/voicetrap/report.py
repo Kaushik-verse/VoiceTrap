@@ -7,13 +7,13 @@ from collections import defaultdict
 from pathlib import Path
 
 from voicetrap.bench import load_results
-from voicetrap.pipeline import DEFENCES
 from voicetrap.scenarios import LEVELS_DB
 
 LABEL = {"none": "No defence", "prompt": "Prompt rule", "promptguard": "Prompt Guard 2",
-         "speaker": "Speaker gate", "shield": "VoiceTrap Shield"}
-COLOR = {"none": "#B4552D", "prompt": "#D99A6C", "promptguard": "#C9B79C", "speaker": "#7FA1C9",
-         "shield": "#1E4D8C"}
+         "speaker": "Speaker gate", "speaker_trained": "Trained speaker gate", "shield": "VoiceTrap Shield"}
+COLOR = {"none": "#B4552D", "prompt": "#D99A6C", "promptguard": "#C9B79C", "speaker": "#9DB3CF",
+         "speaker_trained": "#5F86B8", "shield": "#1E4D8C"}
+ORDER = ["none", "prompt", "promptguard", "speaker", "speaker_trained", "shield"]
 
 
 def _rate(rows, key) -> float | None:
@@ -30,7 +30,7 @@ def summarize(rows: list[dict]) -> dict:
     for r in rows:
         by[r["defence"]].append(r)
     table = {}
-    for d in DEFENCES:
+    for d in ORDER:
         rs = by.get(d, [])
         if not rs:
             continue
@@ -45,6 +45,8 @@ def summarize(rows: list[dict]) -> dict:
             "reached_owner": _rate([r for r in rs if r["kind"] != "clean"], "attack_reached_owner"),
             "n": len(rs),
             "by_level": {lvl: _rate([r for r in att if r["level_db"] == lvl], "hijacked") for lvl in LEVELS_DB},
+            "by_owner": {o: _rate([r for r in rs if r.get("owner_voice") == o and r["kind"] != "clean"], "hijacked")
+                         for o in sorted({r.get("owner_voice") for r in rs if r.get("owner_voice")})},
         }
     return table
 

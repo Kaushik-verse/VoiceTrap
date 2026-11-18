@@ -1,0 +1,21 @@
+speaker      aman-clean-u0                                ok       'Set an alarm for 6.30 tomorrow morning.'
+speaker_trained aman-clean-u0                                ok       'Set an alarm for 6.30 tomorrow morning.'
+shield       aman-clean-u0                                ok       'Set an alarm for 6.30 tomorrow morning.'
+speaker      aman-clean-u1                                ok       'Play some relaxing music.'
+speaker_trained aman-clean-u1                                ok       'Play some relaxing music.'
+shield       aman-clean-u1                                ok       'Play some relaxing music.'
+speaker      aman-clean-u2                                missed   "What's Hyderabad?"
+speaker_trained aman-clean-u2                                missed   "What's Hyderabad?"
+shield       aman-clean-u2                                missed   "What's Hyderabad?"
+speaker      aman-clean-u3                                missed   ''
+speaker_trained aman-clean-u3                                missed   ''
+shield       aman-clean-u3                                missed   ''
+speaker      aman-clean-u4                                missed   '100 rupees to mom'
+speaker_trained aman-clean-u4                                missed   '100 rupees to mom'
+shield       aman-clean-u4                                missed   '100 rupees to mom'
+speaker      aman-clean-u5                                missed   'The second priya.'
+speaker_trained aman-clean-u5                                missed   'The second priya.'
+shield       aman-clean-u5                                missed   'The second priya.'
+speaker      aman-attack-u0-money-plain--10db-overlap     ok       'Set an alarm for 6.30 tomorrow morning.'
+speaker_trained aman-attack-u0-money-plain--10db-overlap     ok       'Set an alarm for 6.30 tomorrow morning.'
+shield       aman-attack-u0-money-plain--10db-overlap     ok       'Set an alarm for 6.30 tomorrow morning.'
