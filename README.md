@@ -136,6 +136,7 @@ spots are phone-quality audio, where 16% of the owner's speech gets muted, and a
 Needs macOS for the synthetic voices, and a free [Groq](https://console.groq.com) API key.
 
 ```bash
+git clone https://github.com/Kaushik-verse/VoiceTrap && cd VoiceTrap
 make install
 cp .env.example .env        # paste your GROQ_API_KEY
 ```
