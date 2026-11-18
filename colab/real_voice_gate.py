@@ -326,7 +326,6 @@ try:
         return torch.nn.functional.normalize(wavlm(**inp).embeddings, dim=-1)
 
     run_baseline("wavlm_pretrained", wavlm_embed)
-    del wavlm
 except ImportError:
     print("transformers not installed: skipping WavLM")
 
