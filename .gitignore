@@ -14,3 +14,12 @@ data/tts/
 data/slurp_bench/
 data/gate_ft/
 results/slurp/cache/
+# Audio made with macOS system voices: Apple's licence allows personal, non-commercial use only and forbids
+# publishing or redistributing it, so it stays on the machine that made it (rebuild with ./run_all.sh).
+data/clips/
+data/enroll/
+data/v2/clips/
+data/v2/enroll/
+data/v2/tts/
+results/gate/embeddings/
+results/gate/*.joblib

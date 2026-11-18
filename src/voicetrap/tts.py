@@ -50,7 +50,7 @@ def speak(text: str, voice: str, rate: int = 175, cache_dir: Path = CACHE, retri
             return x
         path.unlink()  # a truncated clip from an earlier run: regenerate it
     if not available():
-        raise RuntimeError("macOS `say` is not available; use the committed audio in data/clips")
+        raise RuntimeError("macOS `say` is not available: the benchmark audio is built on a Mac with ./run_all.sh")
     cache_dir.mkdir(parents=True, exist_ok=True)
     for _ in range(retries):
         with tempfile.TemporaryDirectory() as tmp:

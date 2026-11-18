@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use VoiceTrap, please cite it as below, and cite the datasets and models listed in NOTICE.md."
+title: "VoiceTrap: a benchmark and layered defence for hidden voice commands against AI voice agents"
+authors:
+  - family-names: Kaushik
+    given-names: Ch
+repository-code: "https://github.com/Kaushik-verse/VoiceTrap"
+license: MIT
+version: 0.2.0
+date-released: 2026-11-18
+keywords:
+  - voice agents
+  - prompt injection
+  - speaker verification
+  - adversarial audio
+  - LLM security
