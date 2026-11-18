@@ -41,11 +41,15 @@ OUT.mkdir(parents=True, exist_ok=True)
 print("work:", WORK, "| results:", OUT, "| smoke:", SMOKE)
 
 # %% [markdown]
-# ## 1. Download the datasets (about 17 GB, Colab disk only, ~10 min)
+# ## 1. Download the datasets (Hugging Face copies: a few minutes on Colab)
+# The original servers (openslr.org, datashare.ed.ac.uk) run at under 1 MB/s from Colab, so the same FLAC files are
+# read from the Hugging Face copies: `openslr/librispeech_asr` (CC BY 4.0) and `sanchit-gandhi/vctk` (VCTK 0.92,
+# CC BY 4.0). VCTK keeps the mic1 recordings, up to 20 per speaker.
 
 # %%
-LIBRI_MIRRORS = ["https://us.openslr.org/resources/12", "https://www.openslr.org/resources/12"]
-VCTK_URL = "https://datashare.ed.ac.uk/bitstream/handle/10283/3443/VCTK-Corpus-0.92.zip"
+from collections import Counter
+
+LIBRI_HF = {"train-clean-100": "train.clean.100", "dev-clean": "validation.clean", "test-clean": "test.clean"}
 
 
 def sh(cmd):
@@ -53,50 +57,63 @@ def sh(cmd):
     subprocess.run(cmd, shell=True, check=True)
 
 
+def unpack(repo, pattern, dest, name_of, keep=lambda row: True):
+    """Download parquet shards from the Hugging Face Hub and write each row's original FLAC bytes to dest/speaker/."""
+    import pyarrow.parquet as pq
+    from huggingface_hub import snapshot_download
+
+    if (dest / ".done").exists():
+        return dest
+    hf = WORK / "hf"
+    snapshot_download(repo, repo_type="dataset", allow_patterns=[pattern], local_dir=hf, max_workers=8)
+    for f in sorted(hf.glob(pattern)):
+        for batch in pq.ParquetFile(f).iter_batches(batch_size=256):
+            for row in batch.to_pylist():
+                if keep(row):
+                    out = dest / str(row["speaker_id"]) / name_of(row)
+                    out.parent.mkdir(parents=True, exist_ok=True)
+                    out.write_bytes(row["audio"]["bytes"])
+        f.unlink()  # free the disk as we go
+    (dest / ".done").touch()
+    return dest
+
+
 def fetch_libri(split):
-    root = WORK / "LibriSpeech" / split
-    if root.exists():
-        return root
-    for m in LIBRI_MIRRORS:
-        try:
-            sh(f"wget -q -c -O {WORK}/{split}.tar.gz {m}/{split}.tar.gz")
-            break
-        except subprocess.CalledProcessError:
-            continue
-    sh(f"tar xzf {WORK}/{split}.tar.gz -C {WORK} && rm {WORK}/{split}.tar.gz")
-    return root
+    return unpack("openslr/librispeech_asr", f"all/{LIBRI_HF[split]}/*.parquet", WORK / "LibriSpeech" / split,
+                  lambda r: f"{r['id']}.flac")
 
 
-def fetch_vctk():
-    root = WORK / "vctk"
-    if root.exists() and any(root.rglob("*_mic1.flac")):
-        return root
-    sh(f"wget -q -c -O {WORK}/vctk.zip {VCTK_URL}")
-    sh(f"unzip -q -o {WORK}/vctk.zip '*_mic1.flac' -d {root} && rm {WORK}/vctk.zip")
-    return root
+def fetch_vctk(per_speaker=20):
+    kept = Counter()
+
+    def keep(r):
+        if "_mic1" not in r["audio"]["path"] or kept[r["speaker_id"]] >= per_speaker:
+            return False
+        kept[r["speaker_id"]] += 1
+        return True
+
+    return unpack("sanchit-gandhi/vctk", "data/*.parquet", WORK / "vctk", lambda r: r["audio"]["path"], keep)
 
 
-def speakers(root, pattern):
-    """speaker id -> sorted list of files (speaker = the file's parent folder for VCTK, top folder for LibriSpeech)."""
+def speakers(root):
+    """speaker id -> sorted list of FLAC files (the speaker is the first folder under root)."""
     out = {}
-    for f in sorted(root.rglob(pattern)):
-        spk = f.parent.name if pattern.endswith("mic1.flac") else f.relative_to(root).parts[0]
-        out.setdefault(spk, []).append(f)
+    for f in sorted(root.rglob("*.flac")):
+        out.setdefault(f.relative_to(root).parts[0], []).append(f)
     return {k: v for k, v in out.items() if len(v) >= 6}
 
 
 if SMOKE:
     local = Path(os.environ["LIBRI_LOCAL"])
-    TRAIN = speakers(local / "train-clean-5", "*.flac")
-    dev = speakers(local / "dev-clean-2", "*.flac")
+    TRAIN = speakers(local / "train-clean-5")
+    dev = speakers(local / "dev-clean-2")
     keys = sorted(dev)
     VAL = {k: dev[k] for k in keys[: len(keys) // 2]}
     TESTS = {"librispeech-test": {k: dev[k] for k in keys[len(keys) // 2 :]}}
 else:
-    TRAIN = speakers(fetch_libri("train-clean-100"), "*.flac")
-    VAL = speakers(fetch_libri("dev-clean"), "*.flac")
-    TESTS = {"librispeech-test": speakers(fetch_libri("test-clean"), "*.flac"),
-             "vctk": speakers(fetch_vctk(), "*_mic1.flac")}
+    TRAIN = speakers(fetch_libri("train-clean-100"))
+    VAL = speakers(fetch_libri("dev-clean"))
+    TESTS = {"librispeech-test": speakers(fetch_libri("test-clean")), "vctk": speakers(fetch_vctk())}
 assert not set(TRAIN) & set(VAL) and all(not set(TRAIN) & set(t) for t in TESTS.values())
 print("speakers  train", len(TRAIN), "| val", len(VAL), "|", {k: len(v) for k, v in TESTS.items()})
 
