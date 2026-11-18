@@ -366,11 +366,16 @@ spk_ids = sorted(TRAIN)
 
 
 class Crops(Dataset):
+    """Random 2 s crops. Seeded by (epoch, index) so every epoch sees different crops and augmentations."""
+
+    def __init__(self, epoch):
+        self.epoch = epoch
+
     def __len__(self):
         return STEPS * BATCH
 
     def __getitem__(self, i):
-        rng = np.random.default_rng((torch.initial_seed() + i) % 2**32)
+        rng = np.random.default_rng([self.epoch, i])
         prng = random.Random(int(rng.integers(2**31)))
         y = int(rng.integers(len(spk_ids)))
         x = read(prng.choice(TRAIN[spk_ids[y]]), CROP_S, prng)
@@ -418,10 +423,8 @@ opt = torch.optim.AdamW([{"params": model.parameters(), "lr": 2e-5},
 if CKPT.exists():
     opt.load_state_dict(ck["opt"])
 scaler = torch.amp.GradScaler(enabled=DEV == "cuda")
-loader = DataLoader(Crops(), batch_size=BATCH, num_workers=0 if SMOKE else os.cpu_count(),
-                    persistent_workers=not SMOKE, drop_last=True)
-
 for epoch in range(start, EPOCHS):
+    loader = DataLoader(Crops(epoch), batch_size=BATCH, num_workers=0 if SMOKE else os.cpu_count(), drop_last=True)
     model.train()
     total = 0.0
     for step, (wav, y) in enumerate(loader):
