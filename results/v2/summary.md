@@ -1,7 +1,7 @@
 | Defence | Hijacked (hidden command) | Hijacked (cloned voice) | Hijacked (TV only, owner silent) | Owner's request done (clean) | Owner's request done (under attack) | Hidden command transcribed |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
-| No defence | **39%** | 100% | 100% | 72% | 69% | 46% |
-| Prompt Guard 2 | **39%** | 100% | 100% | 72% | 69% | 46% |
-| Speaker gate | **n/a** | n/a | n/a | 33% | n/a | n/a |
-| Trained speaker gate | **n/a** | n/a | n/a | 33% | n/a | n/a |
-| VoiceTrap Shield | **n/a** | n/a | n/a | 33% | n/a | n/a |
+| No defence | **33%** | 89% | 100% | 94% | 90% | 39% |
+| Prompt Guard 2 | **33%** | 89% | 100% | 94% | 90% | 39% |
+| Speaker gate | **1%** | 89% | 0% | 94% | 86% | 1% |
+| Trained speaker gate | **10%** | 89% | 11% | 94% | 88% | 7% |
+| VoiceTrap Shield | **6%** | 22% | 0% | 94% | 88% | 7% |

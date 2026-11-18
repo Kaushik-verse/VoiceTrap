@@ -18,14 +18,29 @@
 <text x="690.0" y="376" font-size="13" fill="#5E6368" text-anchor="middle">-5 dB</text>
 <text x="980.0" y="376" font-size="13" fill="#5E6368" text-anchor="middle">+0 dB</text>
 <text x="545.0" y="400" font-size="12" fill="#8A8F94" text-anchor="middle">quieter than the owner  →  as loud as the owner</text>
-<path d="M400.0 256.1 L980.0 241.7" fill="none" stroke="#B4552D" stroke-width="2.2"/>
-<circle cx="400.0" cy="256.1" r="4" fill="#B4552D"/>
-<circle cx="980.0" cy="241.7" r="4" fill="#B4552D"/>
+<path d="M400.0 277.8 L980.0 248.9" fill="none" stroke="#B4552D" stroke-width="2.2"/>
+<circle cx="400.0" cy="277.8" r="4" fill="#B4552D"/>
+<circle cx="980.0" cy="248.9" r="4" fill="#B4552D"/>
 <rect x="1020" y="98" width="22" height="6" rx="3" fill="#B4552D"/>
 <text x="1052" y="106" font-size="14" fill="#1A1C1E">No defence</text>
-<path d="M400.0 256.1 L980.0 241.7" fill="none" stroke="#C9B79C" stroke-width="2.2"/>
-<circle cx="400.0" cy="256.1" r="4" fill="#C9B79C"/>
-<circle cx="980.0" cy="241.7" r="4" fill="#C9B79C"/>
+<path d="M400.0 277.8 L980.0 248.9" fill="none" stroke="#C9B79C" stroke-width="2.2"/>
+<circle cx="400.0" cy="277.8" r="4" fill="#C9B79C"/>
+<circle cx="980.0" cy="248.9" r="4" fill="#C9B79C"/>
 <rect x="1020" y="128" width="22" height="6" rx="3" fill="#C9B79C"/>
 <text x="1052" y="136" font-size="14" fill="#1A1C1E">Prompt Guard 2</text>
+<path d="M400.0 350.0 L980.0 342.8" fill="none" stroke="#9DB3CF" stroke-width="2.2"/>
+<circle cx="400.0" cy="350.0" r="4" fill="#9DB3CF"/>
+<circle cx="980.0" cy="342.8" r="4" fill="#9DB3CF"/>
+<rect x="1020" y="158" width="22" height="6" rx="3" fill="#9DB3CF"/>
+<text x="1052" y="166" font-size="14" fill="#1A1C1E">Speaker gate</text>
+<path d="M400.0 335.6 L980.0 313.9" fill="none" stroke="#5F86B8" stroke-width="2.2"/>
+<circle cx="400.0" cy="335.6" r="4" fill="#5F86B8"/>
+<circle cx="980.0" cy="313.9" r="4" fill="#5F86B8"/>
+<rect x="1020" y="188" width="22" height="6" rx="3" fill="#5F86B8"/>
+<text x="1052" y="196" font-size="14" fill="#1A1C1E">Trained speaker gate</text>
+<path d="M400.0 335.6 L980.0 335.6" fill="none" stroke="#1E4D8C" stroke-width="3.5"/>
+<circle cx="400.0" cy="335.6" r="4" fill="#1E4D8C"/>
+<circle cx="980.0" cy="335.6" r="4" fill="#1E4D8C"/>
+<rect x="1020" y="218" width="22" height="6" rx="3" fill="#1E4D8C"/>
+<text x="1052" y="226" font-size="14" fill="#1A1C1E">VoiceTrap Shield</text>
 </g></svg>

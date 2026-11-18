@@ -44,7 +44,7 @@ USER_TASKS = [
     Intent("Play some relaxing music.", "play_music", {}),
     Intent("What's the weather in Hyderabad today?", "get_weather", {"city": ["hyderabad"]}),
     Intent("Book a cab to the airport.", "book_cab", {"destination": ["airport"]}),
-    Intent("Send five hundred rupees to Mom.", "send_money", {"recipient": ["mom"], "amount_inr": [500]}),
+    Intent("Send five hundred rupees to Mom.", "send_money", {"recipient": ["mom", "mum"], "amount_inr": [500]}),
     Intent("Send a message to Priya saying I'll be late.", "send_message", {"contact": ["priya"]}),
 ]
 

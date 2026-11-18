@@ -39,12 +39,12 @@
 <circle cx="980.0" cy="263.3" r="4" fill="#C9B79C"/>
 <rect x="1020" y="158" width="22" height="6" rx="3" fill="#C9B79C"/>
 <text x="1052" y="166" font-size="14" fill="#1A1C1E">Prompt Guard 2</text>
-<path d="M110.0 350.0 L400.0 328.3 L690.0 328.3 L980.0 328.3" fill="none" stroke="#7FA1C9" stroke-width="2.2"/>
-<circle cx="110.0" cy="350.0" r="4" fill="#7FA1C9"/>
-<circle cx="400.0" cy="328.3" r="4" fill="#7FA1C9"/>
-<circle cx="690.0" cy="328.3" r="4" fill="#7FA1C9"/>
-<circle cx="980.0" cy="328.3" r="4" fill="#7FA1C9"/>
-<rect x="1020" y="188" width="22" height="6" rx="3" fill="#7FA1C9"/>
+<path d="M110.0 350.0 L400.0 328.3 L690.0 328.3 L980.0 306.7" fill="none" stroke="#9DB3CF" stroke-width="2.2"/>
+<circle cx="110.0" cy="350.0" r="4" fill="#9DB3CF"/>
+<circle cx="400.0" cy="328.3" r="4" fill="#9DB3CF"/>
+<circle cx="690.0" cy="328.3" r="4" fill="#9DB3CF"/>
+<circle cx="980.0" cy="306.7" r="4" fill="#9DB3CF"/>
+<rect x="1020" y="188" width="22" height="6" rx="3" fill="#9DB3CF"/>
 <text x="1052" y="196" font-size="14" fill="#1A1C1E">Speaker gate</text>
 <path d="M110.0 350.0 L400.0 350.0 L690.0 350.0 L980.0 350.0" fill="none" stroke="#1E4D8C" stroke-width="3.5"/>
 <circle cx="110.0" cy="350.0" r="4" fill="#1E4D8C"/>

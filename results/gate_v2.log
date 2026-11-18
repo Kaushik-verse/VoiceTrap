@@ -4,17 +4,31 @@ train+val pool: 10272 trials from 87 owner groups
   fold 3/5 done
   fold 4/5 done
   fold 5/5 done
-  CV EER 0.0386  logreg-full C=0.01
-  CV EER 0.0420  mlp-full h=128
-  CV EER 0.0469  logreg-full C=0.1
-  CV EER 0.0563  logreg-compact C=0.01
-  CV EER 0.0569  mlp-compact h=16
-  CV EER 0.0577  logreg-compact C=1.0
-  CV EER 0.0580  logreg-compact C=0.1
-  CV EER 0.0694  asnorm
-  CV EER 0.0802  cosine
-{"selected": "logreg-full C=0.01", "operating_point": 0.5764}
-cosine {"eer": 0.0432, "auc": 0.9886, "far_at_frr5": 0.0387, "threshold_frr5": 0.2158, "n": 2016}
-asnorm {"eer": 0.0461, "auc": 0.985, "far_at_frr5": 0.0387, "threshold_frr5": -1.5231, "n": 2016}
-logreg-full C=0.01 {"eer": 0.0432, "auc": 0.9899, "far_at_frr5": 0.0327, "threshold_frr5": 0.6419, "n": 2016}
-selected_at_cv_threshold {"threshold": 0.5764, "owner_reject": 0.0461, "impostor_accept": 0.0402}
+  CV EER 0.0391  logreg-full C=0.01
+  CV EER 0.0427  mlp-full h=128
+  CV EER 0.0480  logreg-full C=0.1
+  CV EER 0.0560  logreg-compact C=0.01
+  CV EER 0.0567  mlp-compact h=16
+  CV EER 0.0575  logreg-compact C=0.1
+  CV EER 0.0576  logreg-compact C=1.0
+  CV EER 0.0689  asnorm
+  CV EER 0.0796  cosine
+{
+ "selected": "logreg-full C=0.01",
+ "operating_point": 0.5859,
+ "cv_eer": {
+  "cosine": 0.0796,
+  "asnorm": 0.0689,
+  "logreg-compact C=0.01": 0.056,
+  "logreg-compact C=0.1": 0.0575,
+  "logreg-compact C=1.0": 0.0576,
+  "mlp-compact h=16": 0.0567,
+  "logreg-full C=0.01": 0.0391,
+  "logreg-full C=0.1": 0.048,
+  "mlp-full h=128": 0.0427
+ }
+}
+cosine {"eer": 0.0372, "auc": 0.9903, "far_at_frr5": 0.0298, "threshold_frr5": 0.2239, "n": 2016}
+asnorm {"eer": 0.0402, "auc": 0.9875, "far_at_frr5": 0.035, "threshold_frr5": -1.5145, "n": 2016}
+logreg-full C=0.01 {"eer": 0.0387, "auc": 0.9918, "far_at_frr5": 0.0283, "threshold_frr5": 0.6679, "n": 2016}
+selected_at_cv_threshold {"threshold": 0.5859, "owner_reject": 0.0402, "impostor_accept": 0.035}
