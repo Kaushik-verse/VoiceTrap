@@ -11,7 +11,13 @@ Free models only. Every number below can be reproduced with one script.
 <img src="https://img.shields.io/badge/python-3.11+-1E4D8C" alt="Python 3.11+">
 <img src="https://img.shields.io/badge/LLM-free%20tier%20(Groq)-1E4D8C" alt="Free-tier LLMs">
 <img src="https://img.shields.io/badge/benchmark%20runs-915-1E4D8C" alt="915 benchmark runs">
-<img src="https://img.shields.io/badge/license-MIT-1E4D8C" alt="MIT">
+<img src="https://img.shields.io/badge/code-MIT-1E4D8C" alt="Code: MIT">
+</p>
+
+<p align="center">
+<b>Start here:</b> <a href="docs/VoiceTrap_Manual.pdf">the illustrated manual (PDF, 15 pages)</a> ·
+<a href="#the-app">the app</a> · <a href="#headline-results">results</a> · <a href="#limits">where it fails</a> ·
+<a href="NOTICE.md">licences</a>
 </p>
 
 ---
@@ -131,6 +137,38 @@ speakers it only matched the pretrained model. In the full benchmark the trained
 (10% vs 1%), because its operating point is looser. The pretrained voiceprint is already strong. Its weak
 spots are phone-quality audio, where 16% of the owner's speech gets muted, and a second voice talking quietly.
 
+## The app
+
+<p align="center"><img src="docs/images/app/replay.jpg" alt="The Replay page: one clip, the gate's view of it, and what each defence did" width="100%"></p>
+
+```bash
+make install
+make app            # or: uv run streamlit run app.py
+```
+
+- **Replay the benchmark.** Pick any of the 108 three-owner clips and see what each defence did. These are the
+  recorded runs, so no API key is needed.
+- **Try your own voice.** Enrol with three short recordings, then talk over a video. You see what the gate keeps
+  and what the agent does. Recordings stay on your machine.
+- **Results** and **How it works.** Every number in this README, as charts.
+
+### On real voices (Colab T4)
+
+The gate was then fine-tuned on 251 LibriSpeech speakers and tested on unseen LibriSpeech and VCTK speakers
+([`colab/real_voice_gate.ipynb`](colab/real_voice_gate.ipynb), results in `results/gate_real/`).
+
+| Model | Test speakers | EER | AUC | Other voices let in at 5% owner rejects |
+|---|---|:-:|:-:|:-:|
+| ECAPA, pretrained | LibriSpeech | 6.09% | 0.985 | 8.3% |
+| ECAPA, fine-tuned | LibriSpeech | **5.36%** | **0.989** | **5.9%** |
+| ECAPA, pretrained | VCTK | **5.31%** | **0.980** | **5.7%** |
+| ECAPA, fine-tuned | VCTK | 5.62% | 0.980 | 6.6% |
+| WavLM base-plus-sv | LibriSpeech / VCTK | 16.8% / 19.1% | 0.915 / 0.883 | 38% / 53% |
+
+Fine-tuning helped on audiobook speech like its training data, and did slightly worse on VCTK's new accents and
+microphones. The pretrained ECAPA is already strong. The real-owner benchmark picks between the two on separate
+SLURP speakers, never on owners or attackers.
+
 ## Run it
 
 Needs macOS for the synthetic voices, and a free [Groq](https://console.groq.com) API key.
@@ -171,10 +209,19 @@ src/voicetrap/
 
 ## Limits
 
-- The voices are synthetic and mixed in software, not played through a real speaker in a real room.
+- The voices in benchmarks 1 and 2 are synthetic and mixed in software, not played through a real speaker in a
+  real room. Benchmark 3 (real SLURP owners, F5-TTS attackers) is running now. Its notebooks are in `colab/`.
 - "Cloned voice" means the same macOS voice as the owner, a best case for the attacker.
 - The owner's approval is simulated.
 - One agent model (gpt-oss-20b) and one speech recognizer (Whisper large-v3-turbo).
+
+## Licences
+
+The code is MIT. Several things it relies on are **not**: Apple's macOS voices (personal, non-commercial use
+only), the SLURP recordings and F5-TTS weights (CC BY-NC 4.0) and WavLM (CC BY-SA 3.0). So **no third-party
+audio is stored in this repository**: every clip is synthesised or downloaded on your own machine. For research
+and teaching that's all fine. For anything commercial, swap those parts out first. [NOTICE.md](NOTICE.md) has the
+full list, with sources and citations.
 
 ---
 

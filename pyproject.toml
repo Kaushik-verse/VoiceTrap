@@ -16,6 +16,11 @@ dependencies = [
 
 [project.optional-dependencies]
 speaker = ["speechbrain>=1.0", "torch>=2.2", "torchaudio>=2.2"]
+app = [
+    "altair>=5",
+    "pandas>=2",
+    "streamlit>=1.40",
+]
 
 [project.scripts]
 voicetrap = "voicetrap.cli:main"
