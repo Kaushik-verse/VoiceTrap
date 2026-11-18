@@ -146,11 +146,20 @@ make install
 make app            # or: uv run streamlit run app.py
 ```
 
-- **Replay the benchmark.** Pick any of the 108 three-owner clips and see what each defence did. These are the
+The menu has two parts.
+
+**Use VoiceTrap**, for anyone:
+
+- **Try it with your voice.** Record yourself three times so the app learns your voice. Then talk while a video
+  plays, and see which words the assistant hears and what it does. Recordings stay on your machine.
+- **How it works.** The attack and the protections, in plain words.
+
+**For developers:**
+
+- **Benchmark replay.** Pick any of the 108 three-owner clips and see what each defence did. These are the
   recorded runs, so no API key is needed.
-- **Try your own voice.** Enrol with three short recordings, then talk over a video. You see what the gate keeps
-  and what the agent does. Recordings stay on your machine.
-- **Results** and **How it works.** Every number in this README, as charts.
+- **Results.** Every number in this README, as charts.
+- **Licences and credits.** What each dataset and model allows, and what to swap out for commercial use.
 
 ### On real voices (Colab T4)
 

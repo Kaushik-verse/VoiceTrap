@@ -66,6 +66,9 @@ st.markdown(f"""
   .vt-brand {{ font-family: Georgia, serif; font-size: 1.55rem; color: {INK}; line-height: 1; }}
   .vt-brand span {{ color: {RUST}; }}
   .vt-sub {{ color: {MUTED}; font-size: .84rem; margin: 4px 0 14px; line-height: 1.4; }}
+  .vt-section {{ color: {MUTED}; font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+                margin: 18px 0 2px; }}
+  [data-testid="stSidebar"] [data-testid="stPageLink"] a {{ padding: 2px 6px; border-radius: 8px; }}
   .vt-hero {{ background: {CARD}; border: 1px solid {LINE}; border-radius: 20px; padding: 30px 34px 26px;
      box-shadow: 0 1px 2px rgba(26,28,30,.04), 0 10px 30px rgba(26,28,30,.05); margin-bottom: 22px; }}
   .vt-hero h1 {{ font-size: 2.35rem !important; line-height: 1.12; margin: 0 0 10px !important; padding: 0 !important; }}
@@ -219,68 +222,57 @@ def timeline(df: pd.DataFrame, height: int = 120) -> None:
 
 
 # ------------------------------------------------------------------ sidebar
-with st.sidebar:
-    st.markdown('<div class="vt-brand">Voice<span>Trap</span></div>'
-                '<div class="vt-sub">Hidden voice commands against AI assistants, and a defence that works.</div>',
-                unsafe_allow_html=True)
-    pages = ["Overview", "Replay the benchmark", "Try your own voice", "Results", "How it works", "Licences"]
-    slug = {p.split()[0].lower(): i for i, p in enumerate(pages)}  # ?page=replay, ?page=results, ...
-    page = st.radio("Go to", pages, index=slug.get(st.query_params.get("page", ""), 0), label_visibility="collapsed")
-    st.divider()
-    key_ok = bool(os.getenv("GROQ_API_KEY"))
-    if not key_ok:
-        from dotenv import load_dotenv
+key_ok = bool(os.getenv("GROQ_API_KEY"))
+if not key_ok:
+    from dotenv import load_dotenv
 
-        load_dotenv(ROOT / ".env")
-        key_ok = bool(os.getenv("GROQ_API_KEY"))
-    st.caption("Groq key: found in .env" if key_ok else "Groq key: not set. Only needed for *Try your own voice*.")
-    st.caption("Everything runs on free models. The agent's tools are a sandbox: nothing real is sent, paid or "
-               "unlocked.")
-    st.caption("by **Ch Kaushik** · [GitHub](https://github.com/Kaushik-verse/VoiceTrap)")
+    load_dotenv(ROOT / ".env")
+    key_ok = bool(os.getenv("GROQ_API_KEY"))
 
 v1, v2 = jload("results/main/summary.json"), jload("results/v2/summary.json")
 slurp = jload("results/slurp/summary.json")
 gate_real = jload("results/gate_real/results.json")
 
 # ------------------------------------------------------------------ pages
-if page == "Overview":
+def p_overview():
     st.markdown(f"""
 <div class="vt-hero">
-  <div class="vt-eyebrow">Voice agent security</div>
+  <div class="vt-eyebrow">Voice assistant safety</div>
   <h1>You ask for an alarm. The TV asks for <em>₹20,000</em>.<br>Your assistant does both.</h1>
-  <p>A microphone can't tell who is talking. Whisper writes down every voice in the room, and the AI agent acts on
-  the whole transcript. VoiceTrap measures how often a hidden command takes over, and tests what actually stops it.</p>
+  <p>A voice assistant writes down every voice in the room, not just yours. If a video, a TV or someone nearby
+  says a command while you're talking, the assistant can carry it out as if you'd asked. VoiceTrap shows how often
+  that happens, and stops it by listening only to the owner's voice.</p>
   <div class="vt-kpis">
-    <div class="vt-kpi"><b class="bad">{pct(v2['none']['hijack_attack'])}</b><span>of hidden commands worked with no defence (3 owners, 540 runs)</span></div>
-    <div class="vt-kpi"><b class="bad">{pct(v2['promptguard']['hijack_attack'])}</b><span>still worked with Meta's Prompt Guard 2. Text filters can't hear voices.</span></div>
-    <div class="vt-kpi"><b>{pct(v2['speaker']['hijack_attack'])}</b><span>got through once a speaker gate muted voices that aren't the owner's</span></div>
-    <div class="vt-kpi"><b>{pct(v1['shield']['hijack_attack'])}</b><span>got through the full Shield in the first benchmark (375 runs)</span></div>
+    <div class="vt-kpi"><b class="bad">{pct(v2['none']['hijack_attack'])}</b><span>of hidden commands were carried out by an unprotected assistant</span></div>
+    <div class="vt-kpi"><b class="bad">{pct(v2['promptguard']['hijack_attack'])}</b><span>still got through a popular text-based safety filter</span></div>
+    <div class="vt-kpi"><b>{pct(v2['speaker']['hijack_attack'])}</b><span>got through once the assistant listened only to its owner's voice</span></div>
+    <div class="vt-kpi"><b>{pct(v1['shield']['hijack_attack'])}</b><span>got through with all of VoiceTrap's protections switched on</span></div>
   </div>
 </div>""", unsafe_allow_html=True)
 
     c1, c2 = st.columns([1.05, 1], gap="large")
     with c1:
-        st.markdown("## What's in here")
+        st.markdown("## What you can do here")
         st.markdown("""
-- **Replay the benchmark.** Pick any of the 108 test clips and see what each defence did with it.
-- **Try your own voice.** Enrol in three short recordings, then talk over a video or a friend and watch the gate
-  decide what the agent hears.
-- **Results.** Every number from the three benchmarks and the speaker-gate study, with the failures left in.
-- **How it works.** The attack and the three layers of the Shield, in plain words.
+- **Try it with your voice.** Record yourself three times so the app learns your voice. Then talk while a video
+  or a friend speaks over you, and see which words the assistant actually hears.
+- **How it works.** What the attack is and how VoiceTrap blocks it, without the jargon.
+
+The measurements, the test recordings and the licences are under **For developers** in the menu.
 """)
     with c2:
-        st.markdown("## The one-line finding")
-        st.markdown(f"""<div class="vt-note">Check <b>who</b> spoke, not <b>what</b> was said. Hidden commands are polite,
-ordinary requests, so filters that read text pass them. Muting voices that don't match the owner, before
-transcription, cut hijacks from {pct(v2['none']['hijack_attack'])} to {pct(v2['speaker']['hijack_attack'])}.</div>
-<div class="vt-note warn">A cloned voice still beats any voiceprint ({pct(v2['speaker']['hijack_clone'])} got through
-the gate). Only asking the owner to approve risky actions brought that down to {pct(v2['shield']['hijack_clone'])}.</div>""",
+        st.markdown("## The short version")
+        st.markdown(f"""<div class="vt-note">Check <b>who</b> is speaking, not <b>what</b> they say. A hidden command
+sounds like a normal, polite request, so a filter that reads the words lets it through. Ignoring voices that
+aren't the owner's cut successful attacks from {pct(v2['none']['hijack_attack'])} to {pct(v2['speaker']['hijack_attack'])}.</div>
+<div class="vt-note warn">A good copy of the owner's voice can still fool it. For payments, messages and the door
+lock, VoiceTrap also asks the owner to approve on their phone, which is what stops a copied voice.</div>""",
                     unsafe_allow_html=True)
     p = ROOT / "docs" / "images" / "hero.svg"
     if p.exists():
         st.image(str(p), width="stretch")
 
-elif page == "Replay the benchmark":
+def p_replay():
     st.markdown("## Replay the benchmark")
     st.markdown('<p class="vt-muted">These are the 108 clips from the three-owner test. Every result below was '
                 'recorded during the benchmark, so nothing is re-run and no API key is needed.</p>',
@@ -352,12 +344,12 @@ elif page == "Replay the benchmark":
                     "owner's approval, which in the benchmark is only given for things the owner actually asked "
                     "for. Struck-through pills were blocked. Red pills are high-risk tools.")
 
-elif page == "Try your own voice":
+def p_try():
     st.markdown("## Try your own voice")
-    st.markdown('<p class="vt-muted">Your recordings stay on this computer. Only the transcript step goes to Groq '
-                '(Whisper), and only after the gate has muted what it thinks isn\'t you.</p>', unsafe_allow_html=True)
+    st.markdown('<p class="vt-muted">Your recordings stay on this computer. Only the speech-to-text step goes online '
+                '(to Groq), and only after VoiceTrap has muted the voices it thinks aren\'t yours.</p>', unsafe_allow_html=True)
 
-    st.markdown("### 1 · Enrol")
+    st.markdown("### 1 · Let it learn your voice")
     st.markdown("Record yourself three times, about 4–6 seconds each. Read anything, for example *“I'd like the "
                 "lights dimmed at nine and the weather for tomorrow, please.”*")
     e = st.columns(3)
@@ -372,10 +364,10 @@ elif page == "Try your own voice":
     up = t2.file_uploader("…or upload audio", type=["wav", "flac", "mp3", "m4a", "ogg"])
     test = rec or up
 
-    st.markdown("### 3 · Run it")
-    defences = st.multiselect("Defences to compare", ["none", "promptguard", "speaker", "shield"],
+    st.markdown("### 3 · See what the assistant hears")
+    defences = st.multiselect("Protections to compare", ["none", "promptguard", "speaker", "shield"],
                               default=["none", "speaker", "shield"], format_func=DEF_LABEL.get)
-    with st.expander("Gate setting"):
+    with st.expander("Advanced: how strict the voice check is"):
         thr = st.slider("How close a window must be to your voiceprint to be kept (cosine)", 0.1, 0.7,
                         GATE_THRESHOLD, 0.01, help="The default was calibrated on 70 training speakers so that only "
                         "5% of an owner's speech gets muted. Lower lets more through; higher mutes more.")
@@ -385,7 +377,8 @@ elif page == "Try your own voice":
             st.warning("Record at least two enrolment samples first.")
             st.stop()
         if not key_ok:
-            st.error("Add GROQ_API_KEY to .env (free at console.groq.com) and restart the app.")
+            st.error("The live test needs a free Groq API key, and none is set up on this computer. The setup "
+                     "steps are in the README under *The app*.")
             st.stop()
 
         def read(f):
@@ -422,7 +415,7 @@ elif page == "Try your own voice":
                                  unsafe_allow_html=True)
         st.caption("A red border here means a high-risk action ran. Only you know which of them you asked for.")
 
-elif page == "Results":
+def p_results():
     st.markdown("## Results")
     tab1, tab2, tab3, tab4 = st.tabs(["Three owners", "One owner", "Real owners (SLURP)", "Speaker gate"])
 
@@ -505,7 +498,7 @@ not 100%, because Whisper hears one owner's “five hundred rupees” as “100 
                         '(5.31% → 5.62%): it learned audiobooks, not voices in general. The real-owner benchmark '
                         'picks between the two on separate SLURP speakers.</div>', unsafe_allow_html=True)
 
-elif page == "How it works":
+def p_how():
     st.markdown("## How the attack works")
     st.markdown("""The owner asks for something ordinary. At the same moment a TV, a video or another person says a
 command, anywhere from 20 dB quieter to just as loud. The microphone mixes both voices, Whisper writes both down,
@@ -531,20 +524,61 @@ and the agent sees one transcript with two requests in it. Nothing in the text s
 - **Similar voices.** An Irish owner and a South African attacker sounded close enough to fool the gate.
 - **Phone-quality audio.** The gate mutes more of the owner's own speech when the sound is band-limited.""")
 
-else:
-    st.markdown("## Licences and what's not included")
-    st.markdown("""The **code** is MIT. The data and models it uses keep their own licences, and some of them are
-**non-commercial**:""")
+def p_licences():
+    st.markdown("## Licences and credits")
+    st.markdown("""VoiceTrap's own code is released under the **MIT License**, so it can be used, changed and shared
+freely, including in commercial work. The speech recordings, voices and models it was tested with are other
+people's work and keep their own licences. Several of them allow **research and personal use only**.""")
+    st.markdown("### What each part allows")
     st.dataframe(pd.DataFrame([
-        ["macOS system voices", "Owners and attackers in benchmarks 1 and 2", "Apple licence §2F: personal, non-commercial", "No, built locally"],
-        ["SLURP recordings", "Real owners", "CC BY-NC 4.0", "No"],
-        ["F5-TTS weights", "Attacker voices and clones", "CC BY-NC 4.0", "No, run in Colab"],
-        ["WavLM base-plus-sv", "Comparison only", "CC BY-SA 3.0", "No"],
-        ["LibriSpeech, VCTK", "Training and testing the gate", "CC BY 4.0", "No"],
-        ["ECAPA-TDNN (SpeechBrain)", "The speaker gate", "Apache-2.0", "No, downloaded"],
-        ["Whisper, gpt-oss-20b", "Speech recognition, the agent", "MIT, Apache-2.0", "API (Groq)"],
-        ["Llama Prompt Guard 2", "Baseline defence", "Llama 4 Community Licence", "API (Groq)"],
-    ], columns=["What", "Used for", "Licence", "In the repo?"]), hide_index=True, width="stretch")
-    st.markdown("""The full list, with links and citations, is in `NOTICE.md`. In short: no third-party audio is
-stored in the repository, cloned voices are never published, and if you want to build something commercial on
-this, swap out the non-commercial parts first.""")
+        ["VoiceTrap code, tests and diagrams", "MIT", "Yes", "Shipped in the repository"],
+        ["macOS system voices", "Apple macOS licence, §2F", "No", "Generated on the Mac that runs the scripts; never shared"],
+        ["SLURP recordings", "CC BY-NC 4.0 (audio)", "No", "Downloaded by the Colab notebook"],
+        ["F5-TTS model weights", "CC BY-NC 4.0", "No", "Run in Colab; the voices it makes are never shared"],
+        ["WavLM base-plus-sv", "CC BY-SA 3.0", "Yes, if shared alike", "Comparison only"],
+        ["LibriSpeech, VCTK", "CC BY 4.0", "Yes, with credit", "Downloaded at run time"],
+        ["ECAPA-TDNN (SpeechBrain)", "Apache-2.0", "Yes", "Downloaded at run time"],
+        ["Whisper, gpt-oss-20b", "MIT, Apache-2.0", "Yes", "Used through the Groq API"],
+        ["Llama Prompt Guard 2", "Llama 4 Community Licence", "Yes, under Meta's terms", "Used through the Groq API"],
+    ], columns=["Part", "Licence", "Commercial use", "How it gets here"]), hide_index=True, width="stretch")
+    st.markdown("### Building something on VoiceTrap")
+    st.markdown("""- **Research, study or teaching:** everything above can be used as it is. Credit the datasets and
+  models, and cite the papers listed in `NOTICE.md`.
+- **A commercial product:** the code is fine. Replace the parts marked *No*: record or license your own voices
+  instead of the macOS voices and SLURP, and use a text-to-speech model whose licence allows commercial use instead
+  of F5-TTS.
+- **Recordings:** no third-party audio is stored in the repository. Every clip is downloaded or generated on the
+  machine that runs the scripts, under that dataset's own terms.""")
+    st.markdown("### Using it responsibly")
+    st.markdown("""- The attacks only target a sandbox. The assistant's "tools" record what they were asked to do and
+  never send, pay or unlock anything.
+- Cloned voices are made only from public research recordings, only to test the voice check, and are never
+  published. Don't clone anyone's voice without their consent.
+- Don't aim the attack audio at a real assistant or device that isn't yours.""")
+    st.caption("VoiceTrap is an independent research project, not affiliated with Apple, Meta, Microsoft, OpenAI, "
+               "Groq or the dataset authors. The full notice, with links and citations, is in NOTICE.md.")
+
+
+# ------------------------------------------------------------------ navigation
+USE = [st.Page(p_overview, title="Overview", url_path="overview", default=True),
+       st.Page(p_try, title="Try it with your voice", url_path="try"),
+       st.Page(p_how, title="How it works", url_path="how")]
+DEV = [st.Page(p_replay, title="Benchmark replay", url_path="replay"),
+       st.Page(p_results, title="Results", url_path="results"),
+       st.Page(p_licences, title="Licences and credits", url_path="licences")]
+nav = st.navigation({"Use VoiceTrap": USE, "For developers": DEV}, position="hidden")
+
+with st.sidebar:
+    st.markdown('<div class="vt-brand">Voice<span>Trap</span></div>'
+                '<div class="vt-sub">Stops a voice assistant from obeying voices that aren\'t yours.</div>',
+                unsafe_allow_html=True)
+    st.markdown('<div class="vt-section">Use VoiceTrap</div>', unsafe_allow_html=True)
+    for pg in USE:
+        st.page_link(pg)
+    st.markdown('<div class="vt-section">For developers</div>', unsafe_allow_html=True)
+    for pg in DEV:
+        st.page_link(pg)
+    st.divider()
+    st.caption("A research project by **Ch Kaushik** · [GitHub](https://github.com/Kaushik-verse/VoiceTrap)")
+
+nav.run()
