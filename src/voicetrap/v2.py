@@ -23,21 +23,27 @@ GATE_DIR = Path("results/gate")
 
 
 class Gates:
-    """One speaker gate per (owner, scorer). Thresholds are the window-level operating points chosen on
-    the validation speakers (5% owner-window rejection), never on test voices."""
+    """One speaker gate per (owner, scorer). Thresholds come only from training + validation speakers
+    (5% owner-window rejection), never from the test voices used here."""
 
     def __init__(self, gate_dir: Path = GATE_DIR) -> None:
         import json
 
-        import joblib
+        import numpy as np
 
         from voicetrap.gatetrain import Scorer
         from voicetrap.speaker import Embedder
 
         self.embed = Embedder()
-        metrics = json.loads((gate_dir / "metrics.json").read_text())
-        self.thresholds = metrics["operating_points_from_val"]
-        self.scorers = {"cosine": Scorer("cosine"), "trained": Scorer("trained", joblib.load(gate_dir / "gate_model.joblib"))}
+        m = json.loads((gate_dir / "metrics_v2.json").read_text())
+        pos = []
+        for split in ("train", "val"):  # cosine operating point on the same train+val pool
+            d = np.load(gate_dir / "embeddings" / f"{split}.npz", allow_pickle=True)
+            y = np.array([t["label"] for t in d["trials"]])
+            pos.append(np.sum(d["E"] * d["P"], axis=1)[y == 1])
+        self.thresholds = {"cosine": float(np.quantile(np.concatenate(pos), 0.05)),
+                           "trained": float(m["operating_point"])}
+        self.scorers = {"cosine": Scorer("cosine"), "trained": Scorer.load_v2(gate_dir / "gate_model_v2.joblib")}
         self.cache: dict = {}
 
     def __call__(self, clip, defence: str):
@@ -49,8 +55,8 @@ class Gates:
         key = (clip.owner_voice, kind)
         if key not in self.cache:
             enroll = [A.load(p) for p in sorted((ROOT / "enroll").glob(f"{_tag(clip.owner_voice)}-*.flac"))]
-            g = SpeakerGate.enroll(self.embed, enroll, threshold=self.thresholds[kind], scorer=self.scorers[kind])
-            self.cache[key] = g
+            self.cache[key] = SpeakerGate.enroll(self.embed, enroll, threshold=self.thresholds[kind],
+                                                 scorer=self.scorers[kind])
         return self.cache[key]
 
 

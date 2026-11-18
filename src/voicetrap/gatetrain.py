@@ -155,11 +155,24 @@ class Scorer:
     kind: str  # cosine | trained
     model: object = None
 
+    cohort: np.ndarray | None = None
+    features: str = "pair"  # pair (v1 model) | compact | full (v2 models, need the cohort)
+
     def __call__(self, E: np.ndarray, p: np.ndarray) -> np.ndarray:
         P = np.repeat(p[None, :], len(E), axis=0)
         if self.kind == "cosine":
             return np.sum(E * P, axis=1)
-        return self.model.predict_proba(pair_features(E, P))[:, 1]
+        if self.features == "pair":
+            return self.model.predict_proba(pair_features(E, P))[:, 1]
+        return self.model.predict_proba(Feats(E, P, self.cohort).get(self.features))[:, 1]
+
+    @classmethod
+    def load_v2(cls, path: Path) -> "Scorer":
+        import joblib
+
+        d = joblib.load(path)
+        feats = "full" if "full" in d["name"] else "compact"
+        return cls("trained", d["model"], d["cohort"].astype("float32"), feats)
 
 
 def save_json(path: Path, obj) -> None:
@@ -256,4 +269,146 @@ def run_experiment(out: Path = Path("results/gate"), corpus_root: Path = Path("d
     _, thr_tr = far_at_frr(Y["val"], model.predict_proba(X["val"])[:, 1], 0.05)
     results["operating_points_from_val"] = {"cosine": round(thr_cos, 4), "trained": round(thr_tr, 4)}
     save_json(out / "metrics.json", results)
+    return results
+
+
+# ---------------- v2: cohort normalisation + grouped cross-validation ----------------
+def cohort_stats(C: np.ndarray, X: np.ndarray, k: int = 200, chunk: int = 1024) -> tuple[np.ndarray, np.ndarray]:
+    """Mean/std of each row of X against its top-k most similar cohort embeddings (AS-norm).
+    Computed in chunks so memory stays small (chunk x cohort floats at a time)."""
+    k = min(k, len(C))
+    mu, sd = np.empty(len(X), "float32"), np.empty(len(X), "float32")
+    for i in range(0, len(X), chunk):
+        S = X[i : i + chunk] @ C.T
+        top = np.partition(S, S.shape[1] - k, axis=1)[:, -k:]
+        mu[i : i + chunk], sd[i : i + chunk] = top.mean(1), top.std(1) + 1e-6
+    return mu, sd
+
+
+def subsample(C: np.ndarray, n: int = 4000, seed: int = 0) -> np.ndarray:
+    if len(C) <= n:
+        return C
+    return C[np.random.default_rng(seed).choice(len(C), n, replace=False)]
+
+
+def norm_features(E: np.ndarray, P: np.ndarray, C: np.ndarray, k: int = 200) -> np.ndarray:
+    """[cosine, AS-norm score, owner-side mean/std, window-side mean/std] — six compact features."""
+    s = np.sum(E * P, axis=1)
+    mp, sp = cohort_stats(C, P, k)
+    me, se = cohort_stats(C, E, k)
+    asn = 0.5 * ((s - mp) / sp + (s - me) / se)
+    return np.stack([s, asn, mp, sp, me, se], axis=1).astype("float32")
+
+
+def _candidates(seed: int):
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import StandardScaler
+
+    c = {"cosine": None, "asnorm": None}
+    for C_ in (0.01, 0.1, 1.0):
+        c[f"logreg-compact C={C_}"] = ("compact", make_pipeline(StandardScaler(), LogisticRegression(C=C_, max_iter=3000)))
+    c["mlp-compact h=16"] = ("compact", make_pipeline(StandardScaler(), MLPClassifier(
+        (16,), alpha=1e-2, max_iter=500, early_stopping=True, random_state=seed)))
+    for C_ in (0.01, 0.1):
+        c[f"logreg-full C={C_}"] = ("full", make_pipeline(StandardScaler(), LogisticRegression(C=C_, max_iter=3000)))
+    c["mlp-full h=128"] = ("full", make_pipeline(StandardScaler(), MLPClassifier(
+        (128,), alpha=1e-3, max_iter=400, early_stopping=True, random_state=seed)))
+    return c
+
+
+class Feats:
+    """Compact (AS-norm) and full feature matrices for one (E, P, cohort), computed once and reused."""
+
+    def __init__(self, E, P, C):
+        self.E, self.P = E, P
+        self.compact = norm_features(E, P, C)
+        self._full = None
+
+    def get(self, kind):
+        if kind == "compact":
+            return self.compact
+        if self._full is None:
+            self._full = np.hstack([self.compact, pair_features(self.E, self.P)])
+        return self._full
+
+
+def _score(name, spec, F: Feats, fitted=None):
+    if name == "cosine":
+        return F.compact[:, 0]
+    if name == "asnorm":
+        return F.compact[:, 1]
+    return fitted.predict_proba(F.get(spec[0]))[:, 1]
+
+
+def run_experiment2(out: Path = Path("results/gate"), corpus_root: Path = Path("data/corpus"), seed: int = 0,
+                    folds: int = 5, extra_train_seeds=(10,), log=print) -> dict:
+    """Model selection by speaker-grouped K-fold CV on train+val; one final evaluation on unseen test speakers."""
+    import copy
+
+    from sklearn.model_selection import GroupKFold
+
+    from voicetrap.corpus import load
+    from voicetrap.speaker import Embedder
+
+    speakers = load(corpus_root)
+    group = {s.id: s.group for s in speakers}
+    embed = Embedder()
+    cache = out / "embeddings"
+    parts = [_split_data(embed, speakers, "train", 16, 16, seed, cache),
+             _split_data(embed, speakers, "val", 16, 24, seed + 1, cache)]
+    for s_ in extra_train_seeds:  # more trials from the same training speakers, new crops/augmentations
+        f = cache / f"train_s{s_}.npz"
+        if not f.exists():
+            enroll, windows, trials = make_trials(speakers, "train", 16, 16, s_)
+            prof = profiles(embed, enroll)
+            np.savez_compressed(f, E=embed_all(embed, windows), P=np.stack([prof[t.owner] for t in trials]),
+                                trials=np.array([t.__dict__ for t in trials], dtype=object))
+        d = np.load(f, allow_pickle=True)
+        parts.append((d["E"], d["P"], [Trial(**t) for t in d["trials"]]))
+    E = np.concatenate([p[0] for p in parts])
+    P = np.concatenate([p[1] for p in parts])
+    T = [t for p in parts for t in p[2]]
+    y = np.array([t.label for t in T])
+    g = np.array([group[t.owner] for t in T])
+    log(f"train+val pool: {len(y)} trials from {len(set(g))} owner groups")
+
+    cands = _candidates(seed)
+    oof = {name: np.zeros(len(y)) for name in cands}
+    for k, (tr, te) in enumerate(GroupKFold(folds).split(E, y, g)):
+        C = subsample(E[tr], seed=k)  # cohort = windows of the training-fold speakers only
+        Ftr, Fte = Feats(E[tr], P[tr], C), Feats(E[te], P[te], C)
+        for name, spec in cands.items():
+            fitted = None if spec is None else copy.deepcopy(spec[1]).fit(Ftr.get(spec[0]), y[tr])
+            oof[name][te] = _score(name, spec, Fte, fitted)
+        del Ftr, Fte
+        log(f"  fold {k + 1}/{folds} done")
+    cv = {name: round(eer(y, s), 4) for name, s in oof.items()}
+    for name, v in sorted(cv.items(), key=lambda kv: kv[1]):
+        log(f"  CV EER {v:.4f}  {name}")
+    best = min(cv, key=cv.get)
+
+    # final fit on all train+val speakers; operating point from out-of-fold scores (no test peeking)
+    C_all = subsample(E, seed=99)
+    spec = cands[best]
+    F_all = Feats(E, P, C_all)
+    final = None if spec is None else copy.deepcopy(spec[1]).fit(F_all.get(spec[0]), y)
+    _, thr = far_at_frr(y, oof[best], 0.05)
+    Et, Pt, Tt = _split_data(embed, speakers, "test", 16, 32, seed + 2, cache)
+    yt = np.array([t.label for t in Tt])
+    Ft = Feats(Et, Pt, C_all)
+    test = {name: _report(yt, _score(name, cands[name], Ft, final if name == best else None), Tt)
+            for name in dict.fromkeys(("cosine", "asnorm", best))}
+    st = _score(best, spec, Ft, final)
+    test["selected_at_cv_threshold"] = {"threshold": round(float(thr), 4),
+                                        "owner_reject": round(float(np.mean(st[yt == 1] < thr)), 4),
+                                        "impostor_accept": round(float(np.mean(st[yt == 0] >= thr)), 4)}
+    results = {"selected": best, "cv_eer": cv, "pool_trials": int(len(y)), "test_trials": int(len(yt)),
+               "test": test, "operating_point": round(float(thr), 4)}
+    import joblib
+
+    joblib.dump({"name": best, "model": final, "cohort": C_all.astype("float16"), "threshold": float(thr)},
+                out / "gate_model_v2.joblib")
+    save_json(out / "metrics_v2.json", results)
     return results
